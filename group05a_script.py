@@ -6,6 +6,10 @@ import time
 
 trigger = -1    # Global variable for triggering a sensor event
 
+# ------------------------------------------------------------------------------------------
+# EDIT THIS SECTION AS YOUR REQUIREMENT
+# ------------------------------------------------------------------------------------------
+
 # MQTT broker details
 broker    = 'pldindustries.com'
 port      = 1883
@@ -18,17 +22,17 @@ password  = 'app@1234'
 #
 # This contains the sensors that are using. If you want to use a sensor,
 # just add a name and the sensor type to this list.
-#          (  name  ,    type      )
-sensors = [("temp01", "temperature"),
-           ("hum01" , "humidity"   ),
-           ("gas01" , "gas"        ),
-           ("smo01" , "smoke"      ),
-           ("sec01" , "security"   ),
-           ("mot01" , "motion"     ),
-           ("pow01" , "power"      ),
-           ("temp02", "temperature"),
-           ("hum02" , "humidity"   ),
-           ("temp03", "temperature")]
+#          (  name   ,  type      )
+sensors = [(  "co201", "co2"      ),
+           ( "smo01" , "smoke"    ),
+           ("pres01" , "pressure" ),
+           ( "occ01" , "occupancy"),
+           ( "cou01" , "counting" ),
+           ( "lev01" , "level"    ),
+           ( "cap01" , "capacity" ),
+           (  "co202", "co2"      ),
+           ("pres02" , "pressure" ),
+           (  "lev02", "level"    )]
 
 # Sensor details
 #
@@ -37,13 +41,17 @@ sensors = [("temp01", "temperature"),
 # to this dictionary. You can change sensor parameters by changing this.
 #
 #              { sensor_type : [low, high, interval, fraction, decimal]}
-sensor_parms = {"temperature": [ 20,  40,     0,       0.8,       2   ],
-                "humidity"   : [ 20,  100,    4,       0.9,       0   ],
-                "gas"        : [ 10,  30,     0,       0.8,       3   ],
-                "smoke"      : [ 50,  150,    2,       0.8,       3   ],
-                "security"   : [ 10,  30,     0,       0.8,       3   ],
-                "motion"     : [ 10,  30,     0,       0.8,       3   ],
-                "power"      : [ 10,  30,     0,       0.8,       3   ]}
+sensor_parms = {"co2"        : [400, 1000,    5,       0.7,       0   ],
+                "smoke"      : [  1,    1,    0,         1,       0   ],
+                "pressure"   : [ 90,  120,    5,       0.9,       2   ],
+                "occupancy"  : [  1,    1,    0,         1,       0   ],
+                "counting"   : [  0, 1000,    5,         1,       0   ],
+                "level"      : [  0,   20,    5,       0.9,       1   ],
+                "capacity"   : [  0, 3000,    5,       0.6,       1   ]}
+
+# -----------------------------------------------------------------------------------------
+# DO NOT EDIT THIS SECTION !!!
+# -----------------------------------------------------------------------------------------
 
 # Function to create a sensor
 #
@@ -74,7 +82,10 @@ def create_sensor(name, low, high, interval, fraction, decimal):
         rng      = np.random.default_rng(local_seed)   
               
         while 1:
-            rand_num = rng.integers(low, high, size=1)
+            if low != high:
+                rand_num = rng.integers(low, high, size=1)
+            else:
+                rand_num = [low]        # For binary outputs
             value    = round((fraction*value + (1-fraction)*rand_num[0]), decimal)
             # If the event is periodic
             if interval != 0:
