@@ -1,10 +1,12 @@
+# -------------------------------------------------------------------------------------------- #
+### ---------------------------- IOT VIRTUAL SENSOR ENVIRONMENT ---------------------------- ###
+# -------------------------------------------------------------------------------------------- #
+
 import numpy as np
 import paho.mqtt.client as mqtt
 import sys
 import threading
 import time
-
-trigger = -1    # Global variable for triggering a sensor event
 
 # ------------------------------------------------------------------------------------------
 # EDIT THIS SECTION AS YOUR REQUIREMENT
@@ -21,8 +23,10 @@ password  = 'app@1234'
 # Sensors using
 #
 # This contains the sensors that are using. If you want to use a sensor,
-# just add a name and the sensor type to this list.
-#          (  name   ,  type      )
+# just add a name and the sensor type/param list to this list.
+# param list -> [low,high,interval,fraction,decimal]
+#
+#          (  name   , type/params)
 sensors = [(  "co201", "co2"      ),
            ( "smo01" , "smoke"    ),
            ("pres01" , "pressure" ),
@@ -30,14 +34,14 @@ sensors = [(  "co201", "co2"      ),
            ( "cou01" , "counting" ),
            ( "lev01" , "level"    ),
            ( "cap01" , "capacity" ),
-           (  "co202", "co2"      ),
+           (  "co202", [700,2000,5,0.7,0]),
            ("pres02" , "pressure" ),
-           (  "lev02", "level"    )]
+           (  "lev02", [0,10,5,0.9,1])]
 
 # Sensor details
 #
 # If you want to add a new sensor type, just add its type, lower limit, upper limit,
-# time interval, fraction value of the correlation and number of decimal pionts
+# time interval(s), fraction value of the correlation and number of decimal pionts
 # to this dictionary. You can change sensor parameters by changing this.
 #
 #              { sensor_type : [low, high, interval, fraction, decimal]}
@@ -52,6 +56,8 @@ sensor_parms = {"co2"        : [400, 1000,    5,       0.7,       0   ],
 # -----------------------------------------------------------------------------------------
 # DO NOT EDIT THIS SECTION !!!
 # -----------------------------------------------------------------------------------------
+
+trigger = -1    # Global variable for triggering a sensor event
 
 # Function to create a sensor
 #
@@ -115,11 +121,22 @@ client.connect(broker)
 seed = -1
 for sensor in sensors:
     try:
-        if sensor[1] not in sensor_parms.keys():
-            raise Exception("\n Error: Given sensor type'{}' is not available!".format(sensor[1]))
         seed += 1
-        args = [sensor[0]] + sensor_parms[sensor[1]]        # Creating the argument list
-        t    = threading.Thread(target=create_sensor, args=tuple(args))
+        if not isinstance(sensor[0], str):
+            raise Exception("\n Error: Sensor name should be a string!")
+
+        # Creating the argument list
+        if isinstance(sensor[1], str):
+            if sensor[1] not in sensor_parms.keys():
+                raise Exception("\n Error: Given sensor type'{}' is not available!".format(sensor[1]))  
+            args = [sensor[0]] + sensor_parms[sensor[1]]
+        elif isinstance(sensor[1], list):
+            args = [sensor[0]] + sensor[1]
+        else:
+            raise Exception("\n Error: Given sensor type or parameters are not valid!")
+
+        # Creating the thread
+        t = threading.Thread(target=create_sensor, args=tuple(args))
         t.daemon = True
         t.start()
         time.sleep(0.2)
