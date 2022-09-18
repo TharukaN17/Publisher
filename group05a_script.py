@@ -34,9 +34,9 @@ sensors = [(  "co201", "co2"      ),
            ( "cou01" , "counting" ),
            ( "lev01" , "level"    ),
            ( "cap01" , "capacity" ),
-           (  "co202", [700,2000,5,0.7,0]),
+           (  "co202", [700,2000,30,0.7,0]),
            ("pres02" , "pressure" ),
-           (  "lev02", [0,10,5,0.9,1])]
+           (  "lev02", [0,10,60,0.9,1])]
 
 # Sensor details
 #
@@ -45,13 +45,13 @@ sensors = [(  "co201", "co2"      ),
 # to this dictionary. You can change sensor parameters by changing this.
 #
 #              { sensor_type : [low, high, interval, fraction, decimal]}
-sensor_parms = {"co2"        : [400, 1000,    5,       0.7,       0   ],
+sensor_parms = {"co2"        : [400, 1000,   30,       0.7,       0   ],
                 "smoke"      : [  1,    1,    0,         1,       0   ],
-                "pressure"   : [ 90,  120,    5,       0.9,       2   ],
+                "pressure"   : [ 90,  120,   30,       0.9,       2   ],
                 "occupancy"  : [  1,    1,    0,         1,       0   ],
-                "counting"   : [  0, 1000,    5,         1,       0   ],
-                "level"      : [  0,   20,    5,       0.9,       1   ],
-                "capacity"   : [  0, 3000,    5,       0.6,       1   ]}
+                "counting"   : [  0, 1000, 3600,         1,       0   ],
+                "level"      : [  0,   20,   60,       0.9,       1   ],
+                "capacity"   : [  0, 3000, 3600,       0.6,       1   ]}
 
 # -----------------------------------------------------------------------------------------
 # DO NOT EDIT THIS SECTION !!!
