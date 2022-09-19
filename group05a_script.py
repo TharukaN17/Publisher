@@ -27,16 +27,16 @@ password  = 'app@1234'
 # param list -> [low,high,interval,fraction,decimal]
 #
 #          (  name   , type/params)
-sensors = [(  "co201", "co2"      ),
+sensors = [( "co201" , "co2"      ),
            ( "smo01" , "smoke"    ),
            ("pres01" , "pressure" ),
            ( "occ01" , "occupancy"),
            ( "cou01" , "counting" ),
            ( "lev01" , "level"    ),
            ( "cap01" , "capacity" ),
-           (  "co202", [700,2000,30,0.7,0]),
+           ( "co202" , [700,2000,30,0.7,0]),
            ("pres02" , "pressure" ),
-           (  "lev02", [0,10,60,0.9,1])]
+           ( "lev02" , [0,10,60,0.9,1])]
 
 # Sensor details
 #
@@ -96,7 +96,6 @@ def create_sensor(name, low, high, interval, fraction, decimal):
             # If the event is periodic
             if interval != 0:
                 client.publish(subtopic, value)
-                #print("Published {} to the topic {}".format(value, subtopic))
                 time.sleep(interval)
             # If the event is not periodic
             else:
@@ -104,7 +103,6 @@ def create_sensor(name, low, high, interval, fraction, decimal):
                 if trigger == local_seed:
                     print("\n{} sensor Tiggered".format(name))
                     client.publish(subtopic, value)
-                    #print("Published {} to the topic {}".format(value, subtopic))
                     trigger = -1
                 
     except Exception as e:
